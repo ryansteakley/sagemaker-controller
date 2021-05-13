@@ -203,7 +203,7 @@ class TestAdoptedEndpoint:
         )
         model_resource = k8s.get_resource(model_reference)
         assert model_resource is not None
-
+        print(model_resource)
         assert model_resource["spec"].get("modelName", None) == model_name
         assert model_resource["spec"].get("containers", None) is not None
         assert (
@@ -223,7 +223,7 @@ class TestAdoptedEndpoint:
         )
         config_resource = k8s.get_resource(config_reference)
         assert config_resource is not None
-
+        print(config_resource)
         assert (
             config_resource["spec"].get("endpointConfigName", None)
             == endpoint_config_name
@@ -238,7 +238,7 @@ class TestAdoptedEndpoint:
         )
         endpoint_resource = k8s.get_resource(endpoint_reference)
         assert endpoint_resource is not None
-
+        print(endpoint_resource)
         assert endpoint_resource["spec"].get("endpointName", None) == endpoint_name
         assert (
             endpoint_resource["spec"].get("endpointConfigName", None)
