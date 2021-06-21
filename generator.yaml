@@ -466,6 +466,25 @@ resources:
         from:
           operation: DescribeMonitoringSchedule
           path: LastMonitoringExecutionSummary
+  ModelPackageGroup:
+      exceptions:
+        errors:
+            404:
+              code: ValidationException
+              message_suffix: does not exist.
+      fields:
+       ModelPackageGroupStatus:
+          is_read_only: true
+          is_printable: true
+          from:
+            operation: DescribeModelPackageGroup
+            path: ModelPackageGroupStatus
+      CreationTime:
+          is_read_only: true
+          from:
+            operation: DescribeModelPackageGroup
+            path: CreationTime
+      
 ignore:
     resource_names:
       - Algorithm
@@ -495,7 +514,7 @@ ignore:
       # - ModelBiasJobDefinition
       # - ModelExplainabilityJobDefinition
       - ModelPackage
-      - ModelPackageGroup
+      # ModelPackageGroup
       # - ModelQualityJobDefinition
       # - MonitoringSchedule
       - NotebookInstanceLifecycleConfig
