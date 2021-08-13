@@ -17,6 +17,7 @@ package model_package
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	ackv1alpha1 "github.com/aws-controllers-k8s/runtime/apis/core/v1alpha1"
@@ -66,6 +67,7 @@ func (rm *resourceManager) sdkFind(
 	if input.ModelPackageName == nil {
 		arn := r.Identifiers().ARN()
 		if arn == nil {
+			fmt.Println("ARN not found at line 70")
 			return nil, ackerr.NotFound
 		}
 		input.SetModelPackageName(string(*arn))
@@ -76,8 +78,12 @@ func (rm *resourceManager) sdkFind(
 	rm.metrics.RecordAPICall("READ_ONE", "DescribeModelPackage", err)
 	if err != nil {
 		if awsErr, ok := ackerr.AWSError(err); ok && awsErr.Code() == "ValidationException" && strings.HasSuffix(awsErr.Message(), "does not exist.") {
+			fmt.Println(awsErr.Message())
+			fmt.Println("Error at line 80")
 			return nil, ackerr.NotFound
 		}
+		fmt.Println(err)
+		fmt.Println("ERROR at line 85")
 		return nil, err
 	}
 
@@ -1042,16 +1048,21 @@ func (rm *resourceManager) updateConditions(
 		}
 	}
 
-	if rm.terminalAWSError(err) {
+	if rm.terminalAWSError(err) || err == ackerr.SecretTypeNotSupported || err == ackerr.SecretNotFound {
 		if terminalCondition == nil {
 			terminalCondition = &ackv1alpha1.Condition{
 				Type: ackv1alpha1.ConditionTypeTerminal,
 			}
 			ko.Status.Conditions = append(ko.Status.Conditions, terminalCondition)
 		}
+		var errorMessage = ""
+		if err == ackerr.SecretTypeNotSupported || err == ackerr.SecretNotFound {
+			errorMessage = err.Error()
+		} else {
+			awsErr, _ := ackerr.AWSError(err)
+			errorMessage = awsErr.Message()
+		}
 		terminalCondition.Status = corev1.ConditionTrue
-		awsErr, _ := ackerr.AWSError(err)
-		errorMessage := awsErr.Message()
 		terminalCondition.Message = &errorMessage
 	} else {
 		// Clear the terminal condition if no longer present

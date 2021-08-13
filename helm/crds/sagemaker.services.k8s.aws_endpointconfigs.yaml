@@ -4,7 +4,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.4.0
+    controller-gen.kubebuilder.io/version: v0.6.1
   creationTimestamp: null
   name: endpointconfigs.sagemaker.services.k8s.aws
 spec:
@@ -34,7 +34,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: EndpointConfigSpec defines the desired state of EndpointConfig
+            description: EndpointConfigSpec defines the desired state of EndpointConfig.
             properties:
               dataCaptureConfig:
                 properties:
@@ -127,6 +127,20 @@ spec:
                       type: string
                   type: object
                 type: array
+              tags:
+                description: An array of key-value pairs. You can use tags to categorize
+                  your AWS resources in different ways, for example, by purpose, owner,
+                  or environment. For more information, see Tagging AWS Resources
+                  (https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html).
+                items:
+                  description: Describes a tag.
+                  properties:
+                    key:
+                      type: string
+                    value:
+                      type: string
+                  type: object
+                type: array
             required:
             - endpointConfigName
             - productionVariants
@@ -190,9 +204,6 @@ spec:
                   - type
                   type: object
                 type: array
-            required:
-            - ackResourceMetadata
-            - conditions
             type: object
         type: object
     served: true
