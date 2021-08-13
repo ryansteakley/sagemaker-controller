@@ -23,7 +23,6 @@ import (
 	ackcfg "github.com/aws-controllers-k8s/runtime/pkg/config"
 	ackmetrics "github.com/aws-controllers-k8s/runtime/pkg/metrics"
 	acktypes "github.com/aws-controllers-k8s/runtime/pkg/types"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/go-logr/logr"
 
@@ -54,7 +53,6 @@ func (f *resourceManagerFactory) ManagerFor(
 	sess *session.Session,
 	id ackv1alpha1.AWSAccountID,
 	region ackv1alpha1.AWSRegion,
-	awscfg aws.Config,
 ) (acktypes.AWSResourceManager, error) {
 	rmId := fmt.Sprintf("%s/%s", id, region)
 	f.RLock()
@@ -68,7 +66,7 @@ func (f *resourceManagerFactory) ManagerFor(
 	f.Lock()
 	defer f.Unlock()
 
-	rm, err := newResourceManager(cfg, log, metrics, rr, sess, id, region, awscfg)
+	rm, err := newResourceManager(cfg, log, metrics, rr, sess, id, region)
 	if err != nil {
 		return nil, err
 	}

@@ -18,8 +18,6 @@ package model_package
 import (
 	"context"
 	"fmt"
-	"strings"
-
 	ackv1alpha1 "github.com/aws-controllers-k8s/runtime/apis/core/v1alpha1"
 	ackcompare "github.com/aws-controllers-k8s/runtime/pkg/compare"
 	ackerr "github.com/aws-controllers-k8s/runtime/pkg/errors"
@@ -28,6 +26,7 @@ import (
 	svcsdk "github.com/aws/aws-sdk-go/service/sagemaker"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"strings"
 
 	svcapitypes "github.com/aws-controllers-k8s/sagemaker-controller/apis/v1alpha1"
 )
@@ -67,7 +66,7 @@ func (rm *resourceManager) sdkFind(
 	if input.ModelPackageName == nil {
 		arn := r.Identifiers().ARN()
 		if arn == nil {
-			fmt.Println("ARN not found at line 70")
+			fmt.Println("ARN WAS NIL AT LINE 70")
 			return nil, ackerr.NotFound
 		}
 		input.SetModelPackageName(string(*arn))
@@ -78,12 +77,12 @@ func (rm *resourceManager) sdkFind(
 	rm.metrics.RecordAPICall("READ_ONE", "DescribeModelPackage", err)
 	if err != nil {
 		if awsErr, ok := ackerr.AWSError(err); ok && awsErr.Code() == "ValidationException" && strings.HasSuffix(awsErr.Message(), "does not exist.") {
+			fmt.Println("ARN WAS NIL AT LINE 81")
 			fmt.Println(awsErr.Message())
-			fmt.Println("Error at line 80")
 			return nil, ackerr.NotFound
 		}
+		fmt.Println("ARN WAS NIL AT LINE 85")
 		fmt.Println(err)
-		fmt.Println("ERROR at line 85")
 		return nil, err
 	}
 

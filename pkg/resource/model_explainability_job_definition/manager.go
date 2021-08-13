@@ -25,7 +25,6 @@ import (
 	ackerr "github.com/aws-controllers-k8s/runtime/pkg/errors"
 	ackmetrics "github.com/aws-controllers-k8s/runtime/pkg/metrics"
 	acktypes "github.com/aws-controllers-k8s/runtime/pkg/types"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
@@ -59,8 +58,7 @@ type resourceManager struct {
 	awsRegion ackv1alpha1.AWSRegion
 	// sess is the AWS SDK Session object used to communicate with the backend
 	// AWS service API
-	sess   *session.Session
-	awscfg aws.Config
+	sess *session.Session
 	// sdk is a pointer to the AWS service API interface exposed by the
 	// aws-sdk-go/services/{alias}/{alias}iface package.
 	sdkapi svcsdkapi.SageMakerAPI
@@ -181,7 +179,6 @@ func newResourceManager(
 	sess *session.Session,
 	id ackv1alpha1.AWSAccountID,
 	region ackv1alpha1.AWSRegion,
-	awscfg aws.Config,
 ) (*resourceManager, error) {
 	return &resourceManager{
 		cfg:          cfg,
@@ -191,8 +188,7 @@ func newResourceManager(
 		awsAccountID: id,
 		awsRegion:    region,
 		sess:         sess,
-		awscfg:       awscfg,
-		sdkapi:       svcsdk.New(sess, &awscfg),
+		sdkapi:       svcsdk.New(sess),
 	}, nil
 }
 
