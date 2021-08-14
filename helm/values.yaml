@@ -4,7 +4,7 @@
 
 image:
   repository: 587103493019.dkr.ecr.us-west-1.amazonaws.com/ack-canary-cache
-  tag: latest
+  tag: latesa
   pullPolicy: IfNotPresent
   pullSecrets: []
 
