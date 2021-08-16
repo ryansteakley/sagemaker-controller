@@ -62,7 +62,7 @@ def xgboost_model_package_group():
 
     # Delete the k8s resource if not already deleted by tests
     if k8s.get_resource_exists(model_package_group_reference):
-        _, deleted = k8s.delete_custom_resource(model_package_group_reference, 3, 10)
+        _, deleted = k8s.delete_custom_resource(model_package_group_reference, 6, 10)
         assert deleted
 
 
@@ -88,7 +88,7 @@ def xgboost_versioned_model_package(xgboost_model_package_group):
     yield (reference, spec, resource)
     # Delete the k8s resource if not already deleted by tests
     if k8s.get_resource_exists(reference):
-        _, deleted = k8s.delete_custom_resource(reference, 3, 10)
+        _, deleted = k8s.delete_custom_resource(reference, 6, 10)
         assert deleted
 
 
@@ -109,7 +109,7 @@ def xgboost_unversioned_model_package():
     yield (reference, resource)
 
     if k8s.get_resource_exists(reference):
-        _, deleted = k8s.delete_custom_resource(reference, 3, 10)
+        _, deleted = k8s.delete_custom_resource(reference, 6, 10)
         assert deleted
 
 
@@ -200,9 +200,6 @@ class TestmodelPackage:
 
         assert k8s.get_resource_arn(resource) == model_package_arn
 
-        resource_tags = resource["spec"].get("tags", None)
-        assert_tags_in_sync(model_package_arn, resource_tags)
-
         assert model_package_desc["ModelPackageStatus"] == cfg.JOB_STATUS_INPROGRESS
         self._assert_model_package_status_in_sync(
             model_package_name, reference, cfg.JOB_STATUS_INPROGRESS
@@ -214,8 +211,12 @@ class TestmodelPackage:
         )
         assert k8s.wait_on_condition(reference, "ACK.ResourceSynced", "True")
 
+
+        resource_tags = resource["spec"].get("tags", None)
+        assert_tags_in_sync(model_package_arn, resource_tags)
+
         # Check that you can delete a completed resource from k8s
-        _, deleted = k8s.delete_custom_resource(reference, 3, 10)
+        _, deleted = k8s.delete_custom_resource(reference, 6, 10)
         assert deleted is True
         assert get_sagemaker_model_package(model_package_name) is None
 
@@ -236,7 +237,6 @@ class TestmodelPackage:
             )
 
         assert k8s.get_resource_arn(resource) == model_package_name
-        assert model_package_desc["ModelPackageStatus"] == cfg.JOB_STATUS_INPROGRESS
         self._assert_model_package_status_in_sync(
             model_package_name, reference, cfg.JOB_STATUS_INPROGRESS
         )
@@ -271,6 +271,6 @@ class TestmodelPackage:
         )
         assert resource["spec"].get("approvalDescription", None) == approval_description
         # Check that you can delete a completed resource from k8s
-        _, deleted = k8s.delete_custom_resource(reference, 3, 10)
+        _, deleted = k8s.delete_custom_resource(reference, 6, 10)
         assert deleted is True
         assert get_sagemaker_model_package(model_package_name) is None
